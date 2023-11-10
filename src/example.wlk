@@ -10,7 +10,7 @@ class Bot {
 	method ensuciarAceite() {self.aceitePuro(false)}
 }
 
-// sombrero seleccionador - ejercicio 1
+// sombrero seleccionador
 object sombrero inherits Bot (cargaElectrica = 10, aceitePuro = true){
 	var property ultimaCasa = hufflepuf							// guarda la última casa que asignó
 	const casas = [gryffindor, slytherin, ravenclaw, hufflepuf]	// casas posibles
@@ -30,8 +30,8 @@ class Estudiante inherits Bot{
 	var property nombre = []
 	var property hechizosAprendidos = []
 	method esExperimentado() = hechizosAprendidos.size() > 3 && cargaElectrica > 50
-	method assistirAclase(materia) = materia.enseniarHechizo(self)
-	method lanzarHchizoA(hechizo,hechizado) = {
+	method asistirAclase(materia) = materia.enseniarHechizo(self)
+	method lanzarHechizoA(hechizo,hechizado) {
 		if (self.puedeLanzarHechizo(hechizo)) hechizo.lanzarA(hechizado) 
 		else throw new DomainException() ("este estudiante no puede lanzar este hechizo") }
 	method aprenderHechizo(nuevoHechizo) = hechizosAprendidos.add(nuevoHechizo)
@@ -50,6 +50,10 @@ class Profesor inherits Estudiante{
 class Casa {
 	var property estudiantes = []
 	method esPeligrosa() = false
+// ejercicio 5 - lanzar hechizo entre todos los integrantes de la casa
+	method lanzarHechizo(){
+		estudiantes.forEach({estudiante => estudiante.lanzarHechizoA(estudiante.hechizosAprendidos().last(), youKnowWho)})
+	}
 }
 object gryffindor inherits Casa{
 	method proximaCasa() = slytherin
@@ -71,9 +75,8 @@ object hufflepuf inherits Casa{
 
 // Hechizos
 class Hechizo{
-	method cumpleCondiciones(lanzador) // para los hechizos genéricos
-	method lanzarA(hechizado) //self.lanzarHechizoGenerico()// para los hechizos genéricos
-	//method lanzarHechizoGenerico() 
+	method cumpleCondiciones(lanzador)
+	method lanzarA(hechizado)			
 }
 object inmobulus inherits Hechizo {
 	override method cumpleCondiciones(lanzador) = true
@@ -87,11 +90,11 @@ object avadakedabra inherits Hechizo{
 	override method cumpleCondiciones(lanzador) = ! lanzador.aceitePuro()
 	override method lanzarA(hechizado) = hechizado.llevarCargaA0()
 }
-// Nuevo hechizo - bubble sort, ordena alfabéticamente las letras del nombre del hechizado
-object bubbleSortName inherits Hechizo{ 
-	override method cumpleCondiciones(lanzador) = lanzador.nombre().size() > 5 // el lanzador debe tener más de 5 letras en su nombre 
-	override method lanzarA(hechizado) = hechizado.nombre().sortedBy({letra => letra})// revisar
+class HechizoComun inherits Hechizo{
+	method cumpleCondiciones(lanzador,cant)	= lanzador.cargaElectrica() > cant // no llegué a arreglar
+	method lanzarA(hechizado,cant)	= hechizado.disminuirCargaElectrica(cant)
 }
+
 
 // Materias
 class Materia{
@@ -101,40 +104,51 @@ class Materia{
 // ejercicio 3 - enseñar un hechizo a un grupo de estudiantes que  asisten a clase
 	method enseniarHechizoAgrupo(coleccionEstudiantes) = coleccionEstudiantes.forEach{estudiante => self.enseniarHechizo(estudiante)}
 }
-object algoritmosYestructurasDeHechizos inherits Materia (hechizoEnseniado = bubbleSortName, profesor = 0){}
+
+// materia inventada - no llegué
+//object algoritmosYestructurasDeHechizos inherits Materia (hechizoEnseniado = bubbleSortName, profesor = albus){}
+
+// he who must not be named
+object youKnowWho inherits Estudiante (cargaElectrica = 100, aceitePuro = false, casa = slytherin){}
+
+// albus
+object albus inherits Profesor (
+	aceitePuro = true, 
+	cargaElectrica = 100, 
+	casa = gryffindor, 
+	nombre = "albus",
+	materiasDictadas = 10){}
 
 // ---------- Objetos para agilizar tests ----------
-/*Harry, con carga electrica 80, apenas ingresa a Hogwart no puede lanzar ningun hechizo. 
- * Luego asiste a cuatro clases, entre ellas una en la que aprende el "sectum sempra". 
- * Intenta lanzarle dicho hechizo a Draco y lo logra. 
- * Draco, que era aceite puro, queda con aceite sucio. 
- * Mas tarde, Harry le lanza el hechizo al sombrero seleccionador, 
- * logra lanzarlo, pero al sombrero, aún siendo aceite puro, no le sucede nada.
-*/
+
 object harry inherits Estudiante (
 	aceitePuro = true, 
 	cargaElectrica = 80, 
 	casa = 0, 
 	nombre = "harry", 
 	hechizosAprendidos = []	){}
+	
 object draco inherits Estudiante (
 	aceitePuro = true, 
 	cargaElectrica = 100, 
 	casa = 0, 
 	nombre = "draco", 
 	hechizosAprendidos = [] ){}
+	
 object hermione inherits Estudiante (
 	aceitePuro = true, 
 	cargaElectrica = 100, 
 	casa = 0, 
 	nombre = "hermione", 
-	hechizosAprendidos = [] ){}
+	hechizosAprendidos = []){}
+	
 object boti inherits Estudiante (
 	aceitePuro = true, 
 	cargaElectrica = 100, 
 	casa = 0, 
 	nombre = "ron", 
 	hechizosAprendidos = [] ){}
+	
 object chatGPT inherits Estudiante (
 	aceitePuro = true, 
 	cargaElectrica = 100, 
@@ -142,4 +156,8 @@ object chatGPT inherits Estudiante (
 	nombre = "ron", 
 	hechizosAprendidos = [] ){}
 
-
+/* Nuevo hechizo - bubble sort, ordena alfabéticamente las letras del nombre del hechizado
+object bubbleSortName inherits Hechizo{ 
+	override method cumpleCondiciones(lanzador) = lanzador.nombre().size() > 5 // el lanzador debe tener más de 5 letras en su nombre 
+	override method lanzarA(hechizado) = hechizado.nombre().sortBy()// revisar
+}*/ //no llegué

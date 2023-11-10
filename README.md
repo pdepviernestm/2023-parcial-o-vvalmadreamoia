@@ -1,3 +1,3 @@
-# Nuevo proyecto
+# Parfial Paradigma de Objetos
 
-Inserte la descripción de su proyecto aquí
+Valentina Valmadre Amoia

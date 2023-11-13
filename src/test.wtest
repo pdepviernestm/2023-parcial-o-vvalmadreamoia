@@ -1,0 +1,64 @@
+import example.*
+
+// tests de Harry Botter
+test "Harry, Draco, Boti, CHatGPT y Hermione son asignados por el sombrero seleccionador" {
+	
+	sombrero.asignarCasaAGrupo([harry, draco,boti,chatGPT, hermione])
+	
+	assert.equals(harry.casa(),gryffindor)
+	assert.equals(draco.casa(),slytherin)
+	assert.equals(boti.casa(),ravenclaw)
+	assert.equals(chatGPT.casa(),hufflepuf)
+	assert.equals(hermione.casa(),gryffindor)
+}
+
+test "si cuatro estudiantes asisten a la clase de defensa contra los hackeos oscuros dictada por Severus para aprender el hechizo inmobulus, cada uno de ellos lo incorporará a su lista de hechizos aprendidos"{
+	
+	const severus = new Profesor (aceitePuro = true, cargaElectrica = 100, casa = slytherin,nombre = "severus", hechizosAprendidos = [inmobulus], materiasDictadas = 4 ) 
+	const defensaContraLosHackeosOscuros = new Materia (profesor = severus, hechizoEnseniado = inmobulus)
+	
+	defensaContraLosHackeosOscuros.enseniarHechizoAgrupo([harry, draco,hermione,boti])
+	
+	assert.that(harry.hechizosAprendidos().contains(inmobulus))
+	assert.that(draco.hechizosAprendidos().contains(inmobulus))
+	assert.that(hermione.hechizosAprendidos().contains(inmobulus))
+	assert.that(boti.hechizosAprendidos().contains(inmobulus))
+}
+
+test "harry entra a HW con 80 de carga eléctrica, no puede lanzar ningún hechizo pero, luego de asistir a 4 clases aprende spectumSempra.
+	primero se lo lanza a Draco, quien termina con aceite sucio. Luego se lo lanza al sombrero, quien se mantiene intacto"{
+	
+	const minerva = new Profesor (aceitePuro = true, cargaElectrica = 100, casa = gryffindor,nombre = "minerva", hechizosAprendidos = [spectumSempra, inmobulus, avadakedabra], materiasDictadas = 4 )
+	const severus = new Profesor (aceitePuro = true, cargaElectrica = 100, casa = slytherin,nombre = "severus", hechizosAprendidos = [inmobulus], materiasDictadas = 4 ) 
+	const defensaContraLosHackeosOscuros = new Materia (profesor = severus, hechizoEnseniado = inmobulus)
+	
+	const claseDeSS = new Materia(hechizoEnseniado = spectumSempra, profesor = minerva)
+	const claseDeAVD = new Materia(hechizoEnseniado = avadakedabra, profesor = minerva)
+	//const claseDeBSN = new Materia(hechizoEnseniado = bubbleSortName, profesor = minerva)
+	
+	assert.notThat(harry.puedeLanzarHechizo(inmobulus))
+	assert.notThat(harry.puedeLanzarHechizo(spectumSempra))
+	assert.notThat(harry.puedeLanzarHechizo(avadakedabra))
+	
+	harry.asistirAclase(claseDeSS)
+	// harry.asistirAclase(claseDeBSN)
+	harry.asistirAclase(claseDeAVD)
+	harry.asistirAclase(defensaContraLosHackeosOscuros)
+	
+	harry.lanzarHechizoA(spectumSempra, draco)
+	harry.lanzarHechizoA(spectumSempra, sombrero)
+	assert.notThat(draco.aceitePuro())
+	assert.that(sombrero.aceitePuro())
+}
+
+/*test "si hermione lanza a harry el hechizo Bubble Sort Name, su nombre se organiza alfabéticamente"{
+	hermione.lanzarHechizoA(bubbleSortName, harry)
+	assert.equals(harry.nombre(), "ahrry")
+}*/ // no llegúe
+
+/*El estudiante Draco, con aceite puro, de la casa slytherin, que sabe muchos hechizos,
+ * se enfrenta a Albus, un profesor que ademas de conocer muchos hechizos también dicto varias materias,
+ * de gryffindor, con aceite puro. Los dos tienen carga electrica 100. 
+Primero, Albus le lanza exitaosamente el ultimo hechizo que adquirió, que es un hechizo común de carga electrica 60, dejando a Draco con carga 40. Luego, Draco le hace el hechizo avadakedabra, el cual conoce, y Albus queda con carga electrica 50. Por último, Albus intenta repetir el hechizo anterior, pero ya no se encuentra en condiciones de lanzarlo y no sucede nada.
+ 
+ test "se enfrentan Albus y Draco, Albus lanza el último hechizo aprendido "*/ // no llegué
